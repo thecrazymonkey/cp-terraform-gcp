@@ -1,6 +1,7 @@
 # simple terraform to creat CP cluster within AWS, software provisioning to be done via cp-ansible
-data "dns_a_record_set" "my_ip" {
-  host =  var.my_dns
+
+data "http" "myip" {
+  url = "http://ipv4.icanhazip.com"
 }
 
 provider "google" {
@@ -29,7 +30,7 @@ resource "google_compute_firewall" "default" {
    ports    = ["2181", "9091-9093", "8081-8083", "8088", "9021", "9999"]
  }
 
- source_ranges = [format("%s/32",data.dns_a_record_set.my_ip.addrs[0])]
+ source_ranges = [format("%s/32",chomp(data.http.myip.body))]
  source_tags = ["${var.name_prefix}"]
  target_tags = ["${var.name_prefix}"]
 }
