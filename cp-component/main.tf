@@ -10,9 +10,11 @@ locals {
 // A single Google Cloud Engine instance
 resource "google_compute_instance" "this" {
   count        = local.server_sets[local.component]["count"]
-  name         = "${local.server_sets[local.component]["dns_name"]}${count.index+1}-${var.name_prefix}-${var.domain_name}"
+  name         = "${local.server_sets[local.component]["dns_name"]}${count.index+1}-${var.user_name}"
+  hostname     = "${local.server_sets[local.component]["dns_name"]}${count.index+1}.${var.name_prefix}.${var.domain_name}"
+
   machine_type = local.server_sets[local.component]["size"]
-  tags         = ["${var.name_prefix}"]
+  tags         = [var.user_name]
 
   boot_disk {
       initialize_params {
@@ -37,21 +39,18 @@ resource "google_compute_instance" "this" {
 }
 // A variable for extracting the external ip of the instance
 output "ip" {
- value = "${google_compute_instance.this.*.network_interface.0.access_config.0.nat_ip}"
+  value = google_compute_instance.this.*.network_interface.0.network_ip
 }
-// A variable for extracting the external ip of the instance
+// A variable for extracting the hostname of the instance
 output "hostname" {
- value = "${google_compute_instance.this.*.name}"
+ value = google_compute_instance.this.*.hostname
 }
 
-/*
 resource "aws_route53_record" "this" {
   zone_id = local.zone_id
   count   = local.server_sets[local.component]["count"]
   name    = "${local.server_sets[local.component]["dns_name"]}${count.index+1}.${var.name_prefix}.${var.domain_name}"
-  type    = "CNAME"
+  type    = "A"
   ttl     = "300"
-  records = [aws_instance.this[count.index].public_dns]
+  records = [google_compute_instance.this[count.index].network_interface.0.access_config.0.nat_ip]
 }
-
-*/

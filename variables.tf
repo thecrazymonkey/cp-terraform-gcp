@@ -3,11 +3,16 @@ variable "region" {
   default = "us-east4"
 }
 variable "dns_zone" {
-  # nerdynick
-  default = "Z7RSBY5AAK0K7"
+  # ps.confluent.io
+  default = "Z3DYW71V76XUGV"
 }
-variable "name_prefix" {
+
+variable "user_name" {
   default = "ivan"
+}
+
+variable "name_prefix" {
+  default = "ivan.gcp"
 }
 variable "key_name" {
   default = "ikunz"
@@ -17,7 +22,7 @@ variable "key_file" {
 }
 
 variable "domain_name" {
-  default = "crazymonkey-net"
+  default = "ps.confluent.io"
 }
 
 variable "image_name" {

@@ -11,14 +11,15 @@ provider "google" {
   zone         = "us-east4-a"
 }
 
-// Terraform plugin for creating random ids
-resource "random_id" "instance_id" {
- byte_length = 8
+# use aws for DNS
+provider "aws" {
+  version = "~> 2.0"
+  region  = "us-east-1"
+  profile = "confluentsa"
 }
 
-
 resource "google_compute_firewall" "default" {
- name    = "${var.name_prefix}-firewall"
+ name    = "${var.user_name}-firewall"
  network = "default"
 
  allow {
@@ -27,12 +28,12 @@ resource "google_compute_firewall" "default" {
 
  allow {
    protocol = "tcp"
-   ports    = ["2181", "9091-9093", "8081-8083", "8088", "9021", "9999"]
+   ports    = ["2181", "9091-9093", "8081-8083", "8088", "9021", "9999", "8080", "9090"]
  }
 
  source_ranges = [format("%s/32",chomp(data.http.myip.body))]
- source_tags = ["${var.name_prefix}"]
- target_tags = ["${var.name_prefix}"]
+ source_tags = [var.user_name]
+ target_tags = [var.user_name]
 }
 
 #resource "gcp_instance" "ivan_jump" {
@@ -50,6 +51,7 @@ module "cp_gcp_zk" {
   domain_name = var.domain_name
   name_prefix = var.name_prefix
   dns_zone    = var.dns_zone
+  user_name   = var.user_name
 }
 
 module "cp_gcp_bk" {
@@ -62,6 +64,7 @@ module "cp_gcp_bk" {
   domain_name = var.domain_name
   name_prefix = var.name_prefix
   dns_zone    = var.dns_zone
+  user_name   = var.user_name
 }
 
 module "cp_gcp_co" {
@@ -74,6 +77,7 @@ module "cp_gcp_co" {
   domain_name = var.domain_name
   name_prefix = var.name_prefix
   dns_zone    = var.dns_zone
+  user_name   = var.user_name
 }
 module "cp_gcp_rp" {
   source      = "./cp-component"
@@ -85,6 +89,7 @@ module "cp_gcp_rp" {
   domain_name = var.domain_name
   name_prefix = var.name_prefix
   dns_zone    = var.dns_zone
+  user_name   = var.user_name
 }
 module "cp_gcp_sr" {
   source      = "./cp-component"
@@ -96,6 +101,7 @@ module "cp_gcp_sr" {
   domain_name = var.domain_name
   name_prefix = var.name_prefix
   dns_zone    = var.dns_zone
+  user_name   = var.user_name
 }
 
 module "cp_gcp_ks" {
@@ -108,6 +114,7 @@ module "cp_gcp_ks" {
   domain_name = var.domain_name
   name_prefix = var.name_prefix
   dns_zone    = var.dns_zone
+  user_name   = var.user_name
 }
 
 module "cp_gcp_cc" {
@@ -120,4 +127,5 @@ module "cp_gcp_cc" {
   domain_name = var.domain_name
   name_prefix = var.name_prefix
   dns_zone    = var.dns_zone
+  user_name   = var.user_name
 }
