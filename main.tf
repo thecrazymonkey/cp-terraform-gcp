@@ -28,7 +28,7 @@ resource "google_compute_firewall" "default" {
 
  allow {
    protocol = "tcp"
-   ports    = ["2181", "9091-9094", "8081-8083", "8088", "9021", "9999", "8080", "9090"]
+   ports    = ["2181", "9091-9094", "8081-8083", "8088", "9021", "9999", "8080", "9090", "8090"]
  }
 
  source_ranges = [format("%s/32",chomp(data.http.myip.body))]
